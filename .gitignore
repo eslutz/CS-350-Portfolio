@@ -1,3 +1,7 @@
+# Created by https://www.toptal.com/developers/gitignore/api/codecomposerstudio,c,c++
+# Edit at https://www.toptal.com/developers/gitignore?templates=codecomposerstudio,c,c++
+
+### C ###
 # Prerequisites
 *.d
 
@@ -50,3 +54,48 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+### C++ ###
+# Prerequisites
+
+# Compiled Object files
+*.slo
+
+# Precompiled Headers
+
+# Compiled Dynamic libraries
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+
+# Executables
+
+### CodeComposerStudio ###
+
+tmp/
+*.tmp
+*.bak
+# Generated build artifact directories
+Debug/
+Release/
+Flash/
+RAM/
+# Generated build artifacts
+makefile
+*.mk
+*.opt
+*.pp
+*.xml
+# Generated directories
+.config/
+.launches/
+# Generated file used to help display error messages in the problems view
+.xdchelp
+# Uniflash session files
+*.uniflashsession
+
+# End of https://www.toptal.com/developers/gitignore/api/codecomposerstudio,c,c++
