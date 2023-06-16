@@ -33,7 +33,6 @@
 /*
  *  ======== gpiointerrupt.c ========
  */
-#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -46,14 +45,32 @@
 /* Driver configuration */
 #include "ti_drivers_config.h"
 
-#define DISPLAY(x) UART_write(uart, &output, x);
+/* Definitions */
+#define DISPLAY(x) UART_write(uart, &output, x)
+#define timerPeriod 100
+#define numTasks 3
+#define checkButtonPeriod 200
+#define checkTemperaturePeriod 500
+#define updateHeatModeAndServerPeriod 1000
+
+/*
+ *  ======== Task Type ========
+ *
+ *  Defines structure for the task type.
+ */
+typedef struct task {
+    int state;                    // Current state of the task
+    unsigned long period;         // Rate at which the task should tick
+    unsigned long elapsedTime;    // Time since task's previous tick
+    int (*tickFunction)(int);     // Function to call for task's tick
+} task;
 
 /*
  *  ======== Driver Handles ========
  */
-I2C_Handle i2c; // I2C driver handle
-Timer_Handle timer0; // Timer driver handle
-UART_Handle uart; // UART driver handle
+I2C_Handle i2c;         // I2C driver handle
+Timer_Handle timer0;    // Timer driver handle
+UART_Handle uart;       // UART driver handle
 
 /*
  *  ======== Global Variables ========
@@ -78,16 +95,16 @@ uint8_t txBuffer[1];
 uint8_t rxBuffer[2];
 I2C_Transaction i2cTransaction;
 
-// Timer global variable
+// Timer global variables
 volatile unsigned char TimerFlag = 0;
 
 // Thermostat global variables
-enum BUTTON_STATES {INCREASE_TEMPERATURE, DECREASE_TEMPERATURE, BUTTON_INIT} BUTTON_PRESSED;    // States for setting which button was pressed.
-int16_t ambientTemperature = 0;     // Initialize temperature to 0 (will be updated by sensor reading).
-int16_t setPoint = 20;              // Initialize set-point for thermostat at 20캜 (68캟).
-bool heat = false;                  // Initialize thermostat heat status to off (false = 0).
-unsigned int periodIteration = 0;   // Initialize the current period iteration to 0 (starting point).
-int seconds = 0;           // Initialize counter since last reset to -1 ().
+enum BUTTON_STATES {INCREASE_TEMPERATURE, DECREASE_TEMPERATURE, BUTTON_INIT} BUTTON_STATE;  // States for setting which button was pressed.
+enum TEMPERATURE_SENSOR_STATES {READ_TEMPERATURE, TEMPERATURE_SENSOR_INIT};                 // States for the temperature sensor.
+enum HEATING_STATES {HEAT_OFF, HEAT_ON, HEAT_INIT};                                         // States for the heating (heat/led off or on).
+int16_t ambientTemperature = 0;                                                             // Initialize temperature to 0 (will be updated by sensor reading).
+int16_t setPoint = 20;                                                                      // Initialize set-point for thermostat at 20째C (68째F).
+int seconds = 0;                                                                            // Initialize seconds to 0 (will be updated by timer).
 
 /*
  *  ======== Callback ========
@@ -95,13 +112,13 @@ int seconds = 0;           // Initialize counter since last reset to -1 ().
 // GPIO button callback function to increase the thermostat set-point.
 void gpioIncreaseTemperatureCallback(uint_least8_t index)
 {
-    BUTTON_PRESSED = INCREASE_TEMPERATURE;
+    BUTTON_STATE = INCREASE_TEMPERATURE;
 }
 
 // GPIO button callback function to decrease the thermostat set-point.
 void gpioDecreaseTemperatureCallback(uint_least8_t index)
 {
-    BUTTON_PRESSED = DECREASE_TEMPERATURE;
+    BUTTON_STATE = DECREASE_TEMPERATURE;
 }
 
 // Timer callback
@@ -143,7 +160,7 @@ void initI2C(void)
     int8_t i, found;
     I2C_Params i2cParams;
 
-    DISPLAY(snprintf(output, 64, "Initializing I2C Driver - "))
+    DISPLAY(snprintf(output, 64, "Initializing I2C Driver - "));
 
     // Init the driver
     I2C_init();
@@ -156,11 +173,11 @@ void initI2C(void)
     i2c = I2C_open(CONFIG_I2C_0, &i2cParams);
     if (i2c == NULL)
     {
-        DISPLAY(snprintf(output, 64, "Failed\n\r"))
+        DISPLAY(snprintf(output, 64, "Failed\n\r"));
         while (1);
     }
 
-    DISPLAY(snprintf(output, 32, "Passed\n\r"))
+    DISPLAY(snprintf(output, 32, "Passed\n\r"));
 
     // Boards were shipped with different sensors.
     // Welcome to the world of embedded systems.
@@ -179,23 +196,23 @@ void initI2C(void)
          i2cTransaction.slaveAddress = sensors[i].address;
          txBuffer[0] = sensors[i].resultReg;
 
-         DISPLAY(snprintf(output, 64, "Is this %s? ", sensors[i].id))
+         DISPLAY(snprintf(output, 64, "Is this %s? ", sensors[i].id));
          if (I2C_transfer(i2c, &i2cTransaction))
          {
-             DISPLAY(snprintf(output, 64, "Found\n\r"))
+             DISPLAY(snprintf(output, 64, "Found\n\r"));
              found = true;
              break;
          }
-         DISPLAY(snprintf(output, 64, "No\n\r"))
+         DISPLAY(snprintf(output, 64, "No\n\r"));
     }
 
     if(found)
     {
-        DISPLAY(snprintf(output, 64, "Detected TMP%s I2C address: %x\n\r", sensors[i].id, i2cTransaction.slaveAddress))
+        DISPLAY(snprintf(output, 64, "Detected TMP%s I2C address: %x\n\r", sensors[i].id, i2cTransaction.slaveAddress));
     }
     else
     {
-        DISPLAY(snprintf(output, 64, "Temperature sensor not found, contact professor\n\r"))
+        DISPLAY(snprintf(output, 64, "Temperature sensor not found, contact professor\n\r"));
     }
 }
 
@@ -268,24 +285,29 @@ void initTimer(void)
  *  increase or decrease temperature button has been pressed and
  *  then resets BUTTON_PRESSED.
  */
-void adjustSetPointTemperature()
+int adjustSetPointTemperature(int state)
 {
-    switch (BUTTON_PRESSED)
+    // Checks if desired temperature has been adjusted.
+    switch (state)
     {
         case INCREASE_TEMPERATURE:
-            if (setPoint < 99)      // Ensure temperature is not set to above 99캜.
+            if (setPoint < 99)      // Ensure temperature is not set to above 99째C.
             {
                 setPoint++;
             }
+            BUTTON_STATE = BUTTON_INIT;
             break;
         case DECREASE_TEMPERATURE:
-            if (setPoint > 0)       // Ensure temperature is not set lower than 0캜.
+            if (setPoint > 0)       // Ensure temperature is not set lower than 0째C.
             {
                 setPoint--;
             }
+            BUTTON_STATE = BUTTON_INIT;
             break;
     }
-    BUTTON_PRESSED = BUTTON_INIT;   // Reset the state of BUTTON_PRESSED after reading.
+    state = BUTTON_STATE;           // Reset the state of BUTTON_PRESSED after reading.
+
+    return state;
 }
 
 /*
@@ -314,10 +336,30 @@ int16_t readTemp(void)
     }
     else
     {
-        DISPLAY(snprintf(output, 64, "Error reading temperature sensor (%d)\n\r",i2cTransaction.status))
-        DISPLAY(snprintf(output, 64, "Please power cycle your board by unplugging USB and plugging back in.\n\r"))
+        DISPLAY(snprintf(output, 64, "Error reading temperature sensor (%d)\n\r",i2cTransaction.status));
+        DISPLAY(snprintf(output, 64, "Please power cycle your board by unplugging USB and plugging back in.\n\r"));
     }
     return temperature;
+}
+
+/*
+ *  ======== getAmbientTemperature ========
+ *
+ *  Checks the current state to determine if the temperature should be read.
+ */
+int getAmbientTemperature(int state)
+{
+    switch (state)
+    {
+        case TEMPERATURE_SENSOR_INIT:
+            state = READ_TEMPERATURE;
+            break;
+        case READ_TEMPERATURE:
+            ambientTemperature = readTemp();    // Sets the current ambient temperature.
+            break;
+    }
+
+    return state;
 }
 
 /*
@@ -327,18 +369,35 @@ int16_t readTemp(void)
  *  Turns on the heat (Led on) if ambient temperature is lower than the set-point.
  *  Turns off the heat (Led off) if ambient temperature is higher than the set-point.
  */
-void setHeatMode()
+int setHeatMode(int state)
 {
-    if (ambientTemperature < setPoint)  // Turn on the heat.
+    if (seconds != 0)
     {
-        GPIO_write(CONFIG_GPIO_LED_0, CONFIG_GPIO_LED_ON);
-        heat = true;
+        // Determines if heat needs to be turned on and sets heat (led) to on or off.
+        if (ambientTemperature < setPoint)  // Turn on the heat.
+        {
+            GPIO_write(CONFIG_GPIO_LED_0, CONFIG_GPIO_LED_ON);
+            state = HEAT_ON;
+        }
+        else                                // Turn off the heat.
+        {
+            GPIO_write(CONFIG_GPIO_LED_0, CONFIG_GPIO_LED_OFF);
+            state = HEAT_OFF;
+        }
+
+        // Report status to the server.
+        DISPLAY(snprintf(output,
+                             64,
+                             "<%02d,%02d,%d,%04d>\n\r",
+                             ambientTemperature,
+                             setPoint,
+                             state,
+                             seconds));
     }
-    else                                // Turn off the heat.
-    {
-        GPIO_write(CONFIG_GPIO_LED_0, CONFIG_GPIO_LED_OFF);
-        heat = false;
-    }
+
+    seconds++;                              // Increment the second counter.
+
+    return state;
 }
 
 /*
@@ -346,15 +405,30 @@ void setHeatMode()
  */
 void *mainThread(void *arg0)
 {
-    // Task time period constants.
-    const unsigned long timerPeriod = 100;
-    const unsigned long checkButtonPeriod = 200;
-    const unsigned long checkTemperaturePeriod = 500;
-    const unsigned long ledServerUpdatePeriod = 1000;
-    // Elapsed time variables.
-    unsigned long checkButtonElapsedTime = 200;
-    unsigned long checkTemperatureElapsedTime = 500;
-    unsigned long ledServerUpdateElapsedTime = 1000;
+    // Create task list with tasks.
+    task tasks[numTasks] = {
+        // Task 1 - Check button state and update set point.
+        {
+            .state = BUTTON_INIT,
+            .period = checkButtonPeriod,
+            .elapsedTime = checkButtonPeriod,
+            .tickFunction = &adjustSetPointTemperature
+        },
+        // Task 2 - Get temperature from sensor.
+        {
+            .state = TEMPERATURE_SENSOR_INIT,
+            .period = checkTemperaturePeriod,
+            .elapsedTime = checkTemperaturePeriod,
+            .tickFunction = &getAmbientTemperature
+        },
+        // Task 3 - Update heat mode and server.
+        {
+            .state = HEAT_INIT,
+            .period = updateHeatModeAndServerPeriod,
+            .elapsedTime = updateHeatModeAndServerPeriod,
+            .tickFunction = &setHeatMode
+        }
+    };
 
     // Call init functions for the drivers.
     initUART();
@@ -362,42 +436,24 @@ void *mainThread(void *arg0)
     initGPIO();
     initTimer();
 
-    /* Set initial button state */
-    BUTTON_PRESSED = BUTTON_INIT;
-
-    while (1)                                                       // Loop forever.
+    // Loop forever.
+    while (1)
     {
-        if (checkButtonElapsedTime >= checkButtonPeriod)            // Check the buttons every 200ms.
+        unsigned int i = 0;
+        for (i = 0; i < numTasks; ++i)
         {
-            adjustSetPointTemperature();                            // Checks if desired temperature has been adjusted.
-            checkButtonElapsedTime = 0;                             // Reset the elapsed time for checkButton to 0.
-        }
-        if (checkTemperatureElapsedTime >= checkTemperaturePeriod)  // Check the temperature every 500ms.
-        {
-            ambientTemperature = readTemp();                        // Sets the current ambient temperature.
-            checkTemperatureElapsedTime = 0;                        // Reset the elapsed time for checkButton to 0.
-        }
-        if (ledServerUpdateElapsedTime >= ledServerUpdatePeriod)    // Update LED and report to the server every 1000ms (1 second).
-        {
-            setHeatMode();                                          // Determines if heat needs to be turned on and sets heat (led) to on or off.
-            DISPLAY(snprintf(output,                                // Report to the server.
-                             64,
-                             "<%02d,%02d,%d,%04d>\n\r",
-                             ambientTemperature,
-                             setPoint,
-                             heat,
-                             seconds))
-            seconds++;                                              // Increment the second counter.
-            ledServerUpdateElapsedTime = 0;                         // Reset the elapsed time for updating led and reporting to server to 0.
+            if ( tasks[i].elapsedTime >= tasks[i].period )
+            {
+                tasks[i].state = tasks[i].tickFunction(tasks[i].state);
+                tasks[i].elapsedTime = 0;
+             }
+             tasks[i].elapsedTime += timerPeriod;
         }
 
-        while(!TimerFlag){} // Wait for timer period.
-        TimerFlag = 0;      // Set the timer flag variable to FALSE
-
-        // Increment elapsed time for each task by timerPeriod (100ms).
-        checkButtonElapsedTime += timerPeriod;
-        checkTemperatureElapsedTime += timerPeriod;
-        ledServerUpdateElapsedTime += timerPeriod;
+        // Wait for timer period.
+        while(!TimerFlag){}
+        // Set the timer flag variable to FALSE.
+        TimerFlag = 0;
     }
 
     return (NULL);
