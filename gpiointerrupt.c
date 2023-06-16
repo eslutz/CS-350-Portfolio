@@ -247,6 +247,8 @@ void initGPIO(void)
         GPIO_setCallback(CONFIG_GPIO_BUTTON_1, gpioDecreaseTemperatureCallback);
         GPIO_enableInt(CONFIG_GPIO_BUTTON_1);
     }
+
+    BUTTON_STATE = BUTTON_INIT;
 }
 
 // Initialize Timer
