@@ -1,0 +1,72 @@
+******************************************************************************
+                  TI ARM Linker Unix v20.2.7                   
+******************************************************************************
+>> Linked Sun May 21 14:28:49 2023
+
+OUTPUT FILE NAME:   <Module 2 Milestone.out>
+ENTRY POINT SYMBOL: 0
+
+
+MEMORY CONFIGURATION
+
+         name            origin    length      used     unused   attr    fill
+----------------------  --------  ---------  --------  --------  ----  --------
+  SRAM2                 20000000   00004000  00000000  00004000  RW X
+  SRAM                  20004000   0003c000  00000000  0003c000  RW X
+  LOG_DATA              90000000   00040000  00000000  00040000  R   
+
+
+SECTION ALLOCATION MAP
+
+ output                                  attributes/
+section   page    origin      length       input sections
+--------  ----  ----------  ----------   ----------------
+.cinit     0    20004000    00000000     UNINITIALIZED
+
+.init_array 
+*          0    20004000    00000000     UNINITIALIZED
+
+.log_data 
+*          0    90000000    00000000     COPY SECTION
+
+__llvm_prf_cnts 
+*          0    20004000    00000000     UNINITIALIZED
+
+MODULE SUMMARY
+
+       Module   code   ro data   rw data
+       ------   ----   -------   -------
+
+
+GLOBAL SYMBOLS: SORTED ALPHABETICALLY BY Name 
+
+address   name                   
+-------   ----                   
+ffffffff  __TI_pprof_out_hndl    
+ffffffff  __TI_prof_data_size    
+ffffffff  __TI_prof_data_start   
+20004000  __TI_static_base__     
+ffffffff  __binit__              
+ffffffff  __c_args__             
+20004000  __start___llvm_prf_cnts
+20004000  __stop___llvm_prf_cnts 
+ffffffff  binit                  
+UNDEFED   resetISR               
+
+
+GLOBAL SYMBOLS: SORTED BY Symbol Address 
+
+address   name                   
+-------   ----                   
+20004000  __TI_static_base__     
+20004000  __start___llvm_prf_cnts
+20004000  __stop___llvm_prf_cnts 
+ffffffff  __TI_pprof_out_hndl    
+ffffffff  __TI_prof_data_size    
+ffffffff  __TI_prof_data_start   
+ffffffff  __binit__              
+ffffffff  __c_args__             
+ffffffff  binit                  
+UNDEFED   resetISR               
+
+[10 symbols]
