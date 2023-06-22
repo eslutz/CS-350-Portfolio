@@ -1,0 +1,8 @@
+
+
+!CONFIGURATION: 'MCU+Image' (com.ti.ccstudio.buildDefinitions.TMS470.Default.1364034470) [Sat May 06 14:17:11 EDT 2023]
+
+	!TOOL: 'Arm Compiler' (com.ti.ccstudio.buildDefinitions.TMS470_20.2.exe.compilerDebug.1500792259)
+
+		!NOTE: Deprecated build flag '--float_support=vfplib' was migrated to '--float_support=none'.
+

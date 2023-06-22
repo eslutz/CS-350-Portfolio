@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<link_info>
+   <banner>TI ARM Linker Unix v20.2.7.LTS</banner>
+   <copyright>Copyright (c) 1996-2018 Texas Instruments Incorporated</copyright>
+   <link_time>0x646a62e1</link_time>
+   <link_errors>0x4</link_errors>
+   <output_file>Module 2 Milestone.out</output_file>
+   <input_file_list>
+      <input_file id="fl-1">
+         <path>./</path>
+         <kind>object</kind>
+         <file>main_nortos.obj</file>
+         <name>main_nortos.obj</name>
+      </input_file>
+      <input_file id="fl-2">
+         <path>./</path>
+         <kind>object</kind>
+         <file>pwmled2.obj</file>
+         <name>pwmled2.obj</name>
+      </input_file>
+      <input_file id="fl-3">
+         <path>./syscfg/</path>
+         <kind>object</kind>
+         <file>ti_drivers_config.obj</file>
+         <name>ti_drivers_config.obj</name>
+      </input_file>
+      <input_file id="fl-9">
+         <kind>object</kind>
+         <file>&lt;internal&gt;</file>
+         <name>&lt;internal&gt;</name>
+      </input_file>
+      <input_file id="fl-a">
+         <path>/Applications/Development/ti/ccs1230/simplelink_cc32xx_sdk_7_10_00_13/source/ti/devices/cc32xx/driverlib/ccs/Release/</path>
+         <kind>archive</kind>
+         <file>driverlib.a</file>
+         <name>prcm.obj</name>
+      </input_file>
+      <input_file id="fl-b">
+         <path>/Applications/Development/ti/ccs1230/simplelink_cc32xx_sdk_7_10_00_13/source/ti/devices/cc32xx/driverlib/ccs/Release/</path>
+         <kind>archive</kind>
+         <file>driverlib.a</file>
+         <name>utils.obj</name>
+      </input_file>
+      <input_file id="fl-c">
+         <path>/Applications/Development/ti/ccs1230/simplelink_cc32xx_sdk_7_10_00_13/source/ti/devices/cc32xx/driverlib/ccs/Release/</path>
+         <kind>archive</kind>
+         <file>driverlib.a</file>
+         <name>cpu.obj</name>
+      </input_file>
+      <input_file id="fl-d">
+         <path>/Applications/Development/ti/ccs1230/simplelink_cc32xx_sdk_7_10_00_13/source/ti/devices/cc32xx/driverlib/ccs/Release/</path>
+         <kind>archive</kind>
+         <file>driverlib.a</file>
+         <name>flash.obj</name>
+      </input_file>
+      <input_file id="fl-e">
+         <path>/Applications/Development/ti/ccs1230/simplelink_cc32xx_sdk_7_10_00_13/source/ti/devices/cc32xx/driverlib/ccs/Release/</path>
+         <kind>archive</kind>
+         <file>driverlib.a</file>
+         <name>interrupt.obj</name>
+      </input_file>
+      <input_file id="fl-f">
+         <path>/Applications/Development/ti/ccs1230/simplelink_cc32xx_sdk_7_10_00_13/source/ti/devices/cc32xx/driverlib/ccs/Release/</path>
+         <kind>archive</kind>
+         <file>driverlib.a</file>
+         <name>pin.obj</name>
+      </input_file>
+      <input_file id="fl-c5">
+         <path>/Applications/Development/ti/ccs1230/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/lib/</path>
+         <kind>archive</kind>
+         <file>rtsv7M4_T_le_eabi.lib</file>
+         <name>ull_div_t2.asm.obj</name>
+      </input_file>
+      <input_file id="fl-c6">
+         <path>/Applications/Development/ti/ccs1230/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/lib/</path>
+         <kind>archive</kind>
+         <file>rtsv7M4_T_le_eabi.lib</file>
+         <name>copy_zero_init.c.obj</name>
+      </input_file>
+      <input_file id="fl-c7">
+         <path>/Applications/Development/ti/ccs1230/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/lib/</path>
+         <kind>archive</kind>
+         <file>rtsv7M4_T_le_eabi.lib</file>
+         <name>copy_decompress_none.c.obj</name>
+      </input_file>
+      <input_file id="fl-c8">
+         <path>/Applications/Development/ti/ccs1230/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/lib/</path>
+         <kind>archive</kind>
+         <file>rtsv7M4_T_le_eabi.lib</file>
+         <name>copy_decompress_lzss.c.obj</name>
+      </input_file>
+      <input_file id="fl-c9">
+         <path>/Applications/Development/ti/ccs1230/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/lib/</path>
+         <kind>archive</kind>
+         <file>rtsv7M4_T_le_eabi.lib</file>
+         <name>div0.asm.obj</name>
+      </input_file>
+      <input_file id="fl-ca">
+         <path>/Applications/Development/ti/ccs1230/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/lib/</path>
+         <kind>archive</kind>
+         <file>rtsv7M4_T_le_eabi.lib</file>
+         <name>memcpy_t2.asm.obj</name>
+      </input_file>
+      <input_file id="fl-cb">
+         <path>/Applications/Development/ti/ccs1230/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/lib/</path>
+         <kind>archive</kind>
+         <file>rtsv7M4_T_le_eabi.lib</file>
+         <name>memset_t2.asm.obj</name>
+      </input_file>
+   </input_file_list>
+   <object_component_list>
+   </object_component_list>
+   <logical_group_list>
+      <logical_group id="lg-2" display="no" color="cyan">
+         <name>.text</name>
+         <run_address>0x0</run_address>
+         <size>0x0</size>
+         <contents>
+         </contents>
+      </logical_group>
+      <logical_group id="lg-3" display="no" color="cyan">
+         <name>.TI.ramfunc</name>
+         <run_address>0x0</run_address>
+         <size>0x0</size>
+         <contents>
+         </contents>
+      </logical_group>
+      <logical_group id="lg-4" display="no" color="cyan">
+         <name>.const</name>
+         <run_address>0x0</run_address>
+         <size>0x0</size>
+         <contents>
+         </contents>
+      </logical_group>
+      <logical_group id="lg-5" display="no" color="cyan">
+         <name>.rodata</name>
+         <run_address>0x0</run_address>
+         <size>0x0</size>
+         <contents>
+         </contents>
+      </logical_group>
+      <logical_group id="lg-6" display="no" color="cyan">
+         <name>.cinit</name>
+         <run_address>0x0</run_address>
+         <size>0x0</size>
+         <contents>
+         </contents>
+      </logical_group>
+      <logical_group id="lg-7" display="no" color="cyan">
+         <name>.pinit</name>
+         <run_address>0x0</run_address>
+         <size>0x0</size>
+         <contents>
+         </contents>
+      </logical_group>
+      <logical_group id="lg-8" display="no" color="cyan">
+         <name>.init_array</name>
+         <run_address>0x0</run_address>
+         <size>0x0</size>
+         <contents>
+         </contents>
+      </logical_group>
+      <logical_group id="lg-9" display="no" color="cyan">
+         <name>.data</name>
+         <run_address>0x0</run_address>
+         <size>0x0</size>
+         <contents>
+         </contents>
+      </logical_group>
+      <logical_group id="lg-a" display="no" color="cyan">
+         <name>.bss</name>
+         <run_address>0x0</run_address>
+         <size>0x0</size>
+         <contents>
+         </contents>
+      </logical_group>
+      <logical_group id="lg-b" display="no" color="cyan">
+         <name>.sysmem</name>
+         <run_address>0x0</run_address>
+         <size>0x0</size>
+         <contents>
+         </contents>
+      </logical_group>
+      <logical_group id="lg-c" display="no" color="cyan">
+         <name>.stack</name>
+         <run_address>0x0</run_address>
+         <size>0x0</size>
+         <contents>
+         </contents>
+      </logical_group>
+      <logical_group id="lg-d" display="no" color="cyan">
+         <name>.resetVecs</name>
+         <run_address>0x0</run_address>
+         <size>0x0</size>
+         <contents>
+         </contents>
+      </logical_group>
+      <logical_group id="lg-e" display="no" color="cyan">
+         <name>.ramVecs</name>
+         <run_address>0x0</run_address>
+         <size>0x0</size>
+         <contents>
+         </contents>
+      </logical_group>
+      <logical_group id="lg-f" display="no" color="cyan">
+         <name>.log_data</name>
+         <run_address>0x90000000</run_address>
+         <size>0x0</size>
+         <contents>
+         </contents>
+      </logical_group>
+      <logical_group id="lg-6e" display="no" color="cyan">
+         <name>.TI.noinit</name>
+         <run_address>0x0</run_address>
+         <size>0x0</size>
+         <contents>
+         </contents>
+      </logical_group>
+      <logical_group id="lg-6f" display="no" color="cyan">
+         <name>.TI.persistent</name>
+         <run_address>0x0</run_address>
+         <size>0x0</size>
+         <contents>
+         </contents>
+      </logical_group>
+      <logical_group id="lg-70" display="no" color="cyan">
+         <name>__llvm_prf_cnts</name>
+         <run_address>0x20004000</run_address>
+         <size>0x0</size>
+         <contents>
+         </contents>
+      </logical_group>
+      <logical_group id="lg-95" display="no" color="cyan">
+         <name>Veneer$$CMSE</name>
+         <run_address>0x0</run_address>
+         <size>0x0</size>
+         <contents>
+         </contents>
+      </logical_group>
+   </logical_group_list>
+   <placement_map>
+      <memory_area display="yes" color="green">
+         <name>SRAM2</name>
+         <page_id>0x0</page_id>
+         <origin>0x20000000</origin>
+         <length>0x4000</length>
+         <used_space>0x0</used_space>
+         <unused_space>0x4000</unused_space>
+         <attributes>RWX</attributes>
+         <usage_details>
+         </usage_details>
+      </memory_area>
+      <memory_area display="yes" color="green">
+         <name>SRAM</name>
+         <page_id>0x0</page_id>
+         <origin>0x20004000</origin>
+         <length>0x3c000</length>
+         <used_space>0x0</used_space>
+         <unused_space>0x3c000</unused_space>
+         <attributes>RWX</attributes>
+         <usage_details>
+            <allocated_space>
+               <start_address>0x20004000</start_address>
+               <size>0x0</size>
+               <logical_group_ref idref="lg-70"/>
+            </allocated_space>
+            <available_space>
+               <start_address>0x20004000</start_address>
+               <size>0x3c000</size>
+            </available_space>
+         </usage_details>
+      </memory_area>
+      <memory_area display="yes" color="green">
+         <name>LOG_DATA</name>
+         <page_id>0x0</page_id>
+         <origin>0x90000000</origin>
+         <length>0x40000</length>
+         <used_space>0x0</used_space>
+         <unused_space>0x40000</unused_space>
+         <attributes>R</attributes>
+         <usage_details>
+         </usage_details>
+      </memory_area>
+   </placement_map>
+   <symbol_table>
+      <symbol id="sm-1">
+         <name>__start___llvm_prf_cnts</name>
+         <value>0x20004000</value>
+      </symbol>
+      <symbol id="sm-2">
+         <name>__stop___llvm_prf_cnts</name>
+         <value>0x20004000</value>
+      </symbol>
+      <symbol id="sm-3">
+         <name>binit</name>
+         <value>0xffffffff</value>
+      </symbol>
+      <symbol id="sm-4">
+         <name>__binit__</name>
+         <value>0xffffffff</value>
+      </symbol>
+      <symbol id="sm-5">
+         <name>__c_args__</name>
+         <value>0xffffffff</value>
+      </symbol>
+      <symbol id="sm-6">
+         <name>__TI_pprof_out_hndl</name>
+         <value>0xffffffff</value>
+      </symbol>
+      <symbol id="sm-7">
+         <name>__TI_prof_data_start</name>
+         <value>0xffffffff</value>
+      </symbol>
+      <symbol id="sm-8">
+         <name>__TI_prof_data_size</name>
+         <value>0xffffffff</value>
+      </symbol>
+      <symbol id="sm-9">
+         <name>__TI_static_base__</name>
+         <value>0x20004000</value>
+      </symbol>
+      <symbol id="sm-2c">
+         <name>resetISR</name>
+         <value>0x0</value>
+      </symbol>
+   </symbol_table>
+   <title>Link errors: red sections failed placement</title>
+</link_info>
